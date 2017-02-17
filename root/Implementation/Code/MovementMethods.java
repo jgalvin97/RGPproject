@@ -25,27 +25,18 @@ public class MovementMethods {
 	static double wheelCircumference;
 	
 	public static void initialise() {
-		
 		wheelDiameter = 5.6;
 		footPrint = 13.4;
-		
 		motorRight = new EV3LargeRegulatedMotor(MotorPort.D);
 		motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
-		
 //		motorLeft.setSpeed(0);
 //		motorRight.setSpeed(0);
-		
 		wheelCircumference = MovementMethods.wheelDiameter*Math.PI;
-		
-		
-		
 	}
 	
 	
 	public static void moveForward(long distance) {
-		
 		int measure = (int)Math.round((distance/wheelCircumference)*360.0);
-		
 		motorLeft.forward();
 		motorRight.forward();
 		motorLeft.rotate((int)measure);
@@ -55,21 +46,16 @@ public class MovementMethods {
 		
 		motorLeft.close();
 		motorRight.close();
-		
 	}
 	
 	public static void moveBackward(long distance) {
-		
-int measure = (int)Math.round((distance/wheelCircumference)*360.0);
-		
+		int measure = (int)Math.round((distance/wheelCircumference)*360.0);
 		motorLeft.backward();
 		motorRight.backward();
 		motorLeft.rotate((int)measure);
 		motorRight.rotate((int)measure);
-		
 		motorLeft.close();
 		motorRight.close();
-		
 	}
 	
 	public static void rotateLeft(double degree) {
@@ -80,21 +66,12 @@ int measure = (int)Math.round((distance/wheelCircumference)*360.0);
 		
 	}
 	
-	
-	
 	public static void main(String args[]) {
-		
 		initialise();
 		moveForward(20);
-		
 	//	Delay.msDelay(5000);
-		
 	//	moveBackward(15);
 		//rotateLeft(85.0);
 		//rotateRight(65.0);
-		
 	}
-	
-	
-
 }

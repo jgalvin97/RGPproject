@@ -9,8 +9,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class MovementRotation {
 	static double wheelDiameter = 6.5;
 	static double robotTrack = 12.2;
-	
-	
+
 	public static void main(String[] args) {
 		/* Size of square to move around */
 		int squareSize = 40;
@@ -40,8 +39,6 @@ public class MovementRotation {
 			
 			motorLeft.rotate(-degrees,true);
 			motorRight.rotate(degrees);
-			
-
 		}
 		
 		motorLeft.close();
