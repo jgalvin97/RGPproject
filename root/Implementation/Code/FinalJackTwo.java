@@ -27,11 +27,22 @@ public class FinalJackTwo {
     static double RIGHT_ANGLE = 90.0;
     static float[] angleSamples = new float[1];
     
-    
-    
+    public static void initialiser() {
+        motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
+        motorRight = new EV3LargeRegulatedMotor(MotorPort.D);
+        toSynchronise = new EV3LargeRegulatedMotor[]{motorRight};
+        
+        gyroSensor = new EV3GyroSensor(SensorPort.S3);
+        wheelCircumference = 2*2.75*Math.PI;
+        angleProvider = gyroSensor.getAngleMode();
+        errorLastAngle = 0;
+        kP = 50;
+        kD = 50;
+        RIGHT_ANGLE = 90.0;
+        angleSamples = new float[1];
+    }
     
     public static void moveForward(double distance){
-        
         int measure = (int)Math.round((distance/wheelCircumference)*360.0);
         
         motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
@@ -43,7 +54,6 @@ public class FinalJackTwo {
         motorLeft.endSynchronization();
         motorLeft.waitComplete();
         motorRight.waitComplete();
-        
     }
     
     public static void moveBackward(double distance) {
@@ -86,12 +96,9 @@ public class FinalJackTwo {
         angleProvider.fetchSample(sampleArray, 0);
         return sampleArray[0];
     }
-    
-    
-    
-    
+
     public static void main(String args[]) {
-        
+        initialiser();
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
         motorLeft.setAcceleration(2000);
@@ -100,7 +107,5 @@ public class FinalJackTwo {
         moveForward(5);
         Delay.msDelay(1000);
         moveBackward(5);
-        
-    }
-    
+    }   
 }
