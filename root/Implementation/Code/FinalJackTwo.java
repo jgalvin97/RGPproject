@@ -11,21 +11,21 @@ import lejos.robotics.SampleProvider;
 
 public class FinalJackTwo {
     
-    static EV3LargeRegulatedMotor motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
-    static EV3LargeRegulatedMotor motorRight = new EV3LargeRegulatedMotor(MotorPort.D);
-    static EV3LargeRegulatedMotor[] toSynchronise = new EV3LargeRegulatedMotor[]{motorRight};
-    static double wheelCircumference=2*2.75*Math.PI;
-    static EV3GyroSensor gyroSensor = new EV3GyroSensor(SensorPort.S1);
-    static SampleProvider angleProvider = gyroSensor.getAngleMode();
+    static EV3LargeRegulatedMotor motorLeft;
+    static EV3LargeRegulatedMotor motorRight;
+    static EV3LargeRegulatedMotor[] toSynchronise;
+    static double wheelCircumference;
+    static EV3GyroSensor gyroSensor;
+    static SampleProvider angleProvider;
     static double currentAngle;
     static double errorAngle;
-    static double errorLastAngle = 0;
-    static double kP = 50;
-    static double kD = 50;
+    static double errorLastAngle;
+    static double kP;
+    static double kD;
     static double derivativeAngle;
     static double correctionAngle;
-    static double RIGHT_ANGLE = 90.0;
-    static float[] angleSamples = new float[1];
+    static double RIGHT_ANGLE;
+    static float[] angleSamples;
     
     public static void initialiser() {
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
@@ -43,6 +43,7 @@ public class FinalJackTwo {
     }
     
     public static void moveForward(double distance){
+        
         int measure = (int)Math.round((distance/wheelCircumference)*360.0);
         
         motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
@@ -54,6 +55,7 @@ public class FinalJackTwo {
         motorLeft.endSynchronization();
         motorLeft.waitComplete();
         motorRight.waitComplete();
+
     }
     
     public static void moveBackward(double distance) {
@@ -96,7 +98,7 @@ public class FinalJackTwo {
         angleProvider.fetchSample(sampleArray, 0);
         return sampleArray[0];
     }
-
+    
     public static void main(String args[]) {
         initialiser();
         motorLeft.setSpeed(90);
@@ -107,5 +109,5 @@ public class FinalJackTwo {
         moveForward(5);
         Delay.msDelay(1000);
         moveBackward(5);
-    }   
+    }
 }
