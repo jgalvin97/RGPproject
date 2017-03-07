@@ -36,6 +36,7 @@ public class FinalJackTwo {
     static double correctionAngle;
     static double RIGHT_ANGLE;
     static float[] angleSamples;
+<<<<<<< HEAD
     
     static boolean[] lineValues;
     static boolean notLocalised;
@@ -64,6 +65,8 @@ public class FinalJackTwo {
     static float soundValue;
     
     static int stateTracker;
+=======
+>>>>>>> af6af85bc309af63a43f6cd5ba826b4a5eec835a
     
     public static void initialiser() {
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
@@ -111,6 +114,7 @@ public class FinalJackTwo {
     }
     
     public static void moveForward(double distance){
+        
         int measure = (int)Math.round((distance/wheelCircumference)*360.0);
         
         motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
@@ -122,6 +126,7 @@ public class FinalJackTwo {
         motorLeft.endSynchronization();
         motorLeft.waitComplete();
         motorRight.waitComplete();
+
     }
     
     public static void moveBackward(double distance) {
@@ -197,6 +202,7 @@ public class FinalJackTwo {
         return sampleArray[0];
     }
     
+<<<<<<< HEAD
     public static float readLight(float[] sampleArray) {
         colourProvider.fetchSample(sampleArray, 0);
         return sampleArray[0];
@@ -292,6 +298,8 @@ public class FinalJackTwo {
         Sound.beep();
     }
     
+=======
+>>>>>>> af6af85bc309af63a43f6cd5ba826b4a5eec835a
     public static void main(String args[]) {
         initialiser();
         //		System.out.println("test");
@@ -303,6 +311,7 @@ public class FinalJackTwo {
         //System.out.println(lineProbabilities.values());
         //Button.waitForAnyPress();
         
+<<<<<<< HEAD
         localiseLine();
         
         
@@ -327,5 +336,11 @@ public class FinalJackTwo {
          }*/
     }
     
+=======
+        moveForward(5);
+        Delay.msDelay(1000);
+        moveBackward(5);
+    }
+>>>>>>> af6af85bc309af63a43f6cd5ba826b4a5eec835a
 }
 
