@@ -16,18 +16,36 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 
 public class FinalJackTwo {
     
+    static EV3ColorSensor colorSensor;
+    static EV3GyroSensor gyroSensor;
+    static EV3TouchSensor impactSensor;
+    static EV3UltrasonicSensor soundSensor;
     static EV3LargeRegulatedMotor motorLeft;
     static EV3LargeRegulatedMotor motorRight;
+    
+    static SampleProvider colourProvider;
+    static float[] lightSamples;
+    static boolean lightValue;
+    
+    static SampleProvider angleProvider;
+    static float[] angleSamples;
+    static double currentAngle;
+    
+    static SampleProvider impactProvider;
+    static float[] impactSamples;
+    static float impactValue;
+    
+    static SampleProvider soundProvider;
+    static float[] soundSamples;
+    static float soundValue;
+    
     static EV3LargeRegulatedMotor[] toSynchronise;
     static double wheelCircumference;
-    static EV3GyroSensor gyroSensor;
-    static SampleProvider angleProvider;
-    static double currentAngle;
+    
     static double errorAngle;
     static double errorLastAngle;
     static double kP;
@@ -35,54 +53,46 @@ public class FinalJackTwo {
     static double derivativeAngle;
     static double correctionAngle;
     static double RIGHT_ANGLE;
-    static float[] angleSamples;
-<<<<<<< HEAD
     
     static boolean[] lineValues;
     static boolean notLocalised;
-    static SampleProvider colourProvider;
-    static EV3ColorSensor colorSensor;
-    static boolean lightValue;
-    static float[] lightSamples;
     static HashMap<Integer, Double> lineProbabilities;
     static double normValue;
     static double totalProb;
     
-    //Test probabilities...
     static double sensorWorks;
     static double sensorNot;
     static double motorCorrect;
     static double motorWrong;
     
-    static EV3TouchSensor impactSensor;
-    static SampleProvider impactProvider;
-    static float[] impactSamples;
-    static float impactValue;
-    
-    static EV3UltrasonicSensor soundSensor;
-    static SampleProvider soundProvider;
-    static float[] soundSamples;
-    static float soundValue;
     
     static int stateTracker;
-=======
->>>>>>> af6af85bc309af63a43f6cd5ba826b4a5eec835a
     
     public static void initialiser() {
+        colorSensor = new EV3ColorSensor(SensorPort.S4);
+        gyroSensor = new EV3GyroSensor(SensorPort.S1);
+        impactSensor = new EV3TouchSensor(SensorPort.S3);
+        soundSensor = new EV3UltrasonicSensor(SensorPort.S2);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
         motorRight = new EV3LargeRegulatedMotor(MotorPort.D);
+        
+        colourProvider = colorSensor.getRedMode();
+        angleProvider = gyroSensor.getAngleMode();
+        impactProvider = impactSensor.getTouchMode();
+        soundProvider = soundSensor.getDistanceMode();
+        lightSamples = new float[1];
+        angleSamples = new float[1];
+        impactSamples = new float[1];
+        soundSamples = new float[1];
+        
+        
         toSynchronise = new EV3LargeRegulatedMotor[]{motorRight};
         
-        gyroSensor = new EV3GyroSensor(SensorPort.S1);
         wheelCircumference = 2*2.75*Math.PI;
-        angleProvider = gyroSensor.getAngleMode();
         errorLastAngle = 0;
         kP = 0.1;
         kD = 0.1;
         //RIGHT_ANGLE = 90.0;
-        angleSamples = new float[1];
-        lightSamples = new float[1];
-        impactSamples = new float[1];
         
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
@@ -91,8 +101,6 @@ public class FinalJackTwo {
         
         //True is BLUE - False is WHITE
         lineValues = new boolean[]{true, false, true, false, false, true, true, false, true, true, false, false, true, true, true, false, true, true, true, false, false, true, true, true, false, false, false, true, true, true, true, false, false, false};;
-        colorSensor = new EV3ColorSensor(SensorPort.S4);
-        colourProvider = colorSensor.getRedMode();
         notLocalised = true;
         lineProbabilities = new HashMap<Integer, Double>();
         for(int i =0; i < 34; i++) {
@@ -102,19 +110,12 @@ public class FinalJackTwo {
         sensorWorks = 0.98;
         sensorNot = 0.02;
         
-        impactSensor = new EV3TouchSensor(SensorPort.S3);
-        impactProvider = impactSensor.getTouchMode();
         
-        soundSensor = new EV3UltrasonicSensor(SensorPort.S2);
-        soundProvider = soundSensor.getDistanceMode();
-        
-        stateTracker = -1;
-        stateTracker++;
+        stateTracker = 0;
         
     }
     
     public static void moveForward(double distance){
-        
         int measure = (int)Math.round((distance/wheelCircumference)*360.0);
         
         motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
@@ -126,7 +127,6 @@ public class FinalJackTwo {
         motorLeft.endSynchronization();
         motorLeft.waitComplete();
         motorRight.waitComplete();
-
     }
     
     public static void moveBackward(double distance) {
@@ -202,7 +202,6 @@ public class FinalJackTwo {
         return sampleArray[0];
     }
     
-<<<<<<< HEAD
     public static float readLight(float[] sampleArray) {
         colourProvider.fetchSample(sampleArray, 0);
         return sampleArray[0];
@@ -221,7 +220,7 @@ public class FinalJackTwo {
     
     //Increase precision...
     public static boolean processLight(double raw){
-        if(raw < 0.78){
+        if(raw < 0.6){
             return true;
         }
         else{
@@ -274,10 +273,7 @@ public class FinalJackTwo {
         stateTracker++;
     }
     
-    //Task Two...
-    public static void potentialPlan() {
-        
-    }
+    
     
     public static void impactStop() {
         
@@ -298,8 +294,6 @@ public class FinalJackTwo {
         Sound.beep();
     }
     
-=======
->>>>>>> af6af85bc309af63a43f6cd5ba826b4a5eec835a
     public static void main(String args[]) {
         initialiser();
         //		System.out.println("test");
@@ -311,7 +305,6 @@ public class FinalJackTwo {
         //System.out.println(lineProbabilities.values());
         //Button.waitForAnyPress();
         
-<<<<<<< HEAD
         localiseLine();
         
         
@@ -336,11 +329,5 @@ public class FinalJackTwo {
          }*/
     }
     
-=======
-        moveForward(5);
-        Delay.msDelay(1000);
-        moveBackward(5);
-    }
->>>>>>> af6af85bc309af63a43f6cd5ba826b4a5eec835a
 }
 
