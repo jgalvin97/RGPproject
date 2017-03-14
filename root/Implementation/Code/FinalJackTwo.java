@@ -1,17 +1,10 @@
 package leJOSEV3;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.Motor;
 import lejos.hardware.port.MotorPort;
-import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
-import lejos.utility.Delay;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
@@ -65,7 +58,6 @@ public class FinalJackTwo {
     static double motorCorrect;
     static double motorWrong;
     
-    
     static int stateTracker;
     
     public static void initialiser() {
@@ -84,7 +76,6 @@ public class FinalJackTwo {
         angleSamples = new float[1];
         impactSamples = new float[1];
         soundSamples = new float[1];
-        
         
         toSynchronise = new EV3LargeRegulatedMotor[]{motorRight};
         
@@ -110,9 +101,7 @@ public class FinalJackTwo {
         sensorWorks = 0.98;
         sensorNot = 0.02;
         
-        
-        stateTracker = 0;
-        
+        stateTracker = 0; 
     }
     
     public static void moveForward(double distance){
@@ -146,8 +135,6 @@ public class FinalJackTwo {
     public static void rotateLeft(double targetAngle) {
         gyroSensor.reset();
         while(true){
-            
-            
             currentAngle = readAngle(angleSamples);
             System.out.println(currentAngle);
             errorAngle = targetAngle - currentAngle;
@@ -169,7 +156,6 @@ public class FinalJackTwo {
             
             motorLeft.endSynchronization();
             errorLastAngle = errorAngle;
-            
         }
     }
     
@@ -193,7 +179,6 @@ public class FinalJackTwo {
             
             motorLeft.endSynchronization();
             errorLastAngle = errorAngle;
-            
         }
     }
     
@@ -205,7 +190,6 @@ public class FinalJackTwo {
     public static float readLight(float[] sampleArray) {
         colourProvider.fetchSample(sampleArray, 0);
         return sampleArray[0];
-        
     }
     
     public static float readImpact(float[] sampleArray) {
@@ -230,7 +214,6 @@ public class FinalJackTwo {
     
     //Task One...
     public static void localiseLine(){
-        
         while(notLocalised) {
             //Take a light reading...
             lightValue = processLight(readLight(lightSamples));
@@ -272,13 +255,9 @@ public class FinalJackTwo {
         }
         stateTracker++;
     }
-    
-    
-    
+
     public static void impactStop() {
-        
         impactValue = (int)(readImpact(impactSamples));
-        
         if(impactValue == 1) {
             stopMotors();
             playBeep();
@@ -296,38 +275,21 @@ public class FinalJackTwo {
     
     public static void main(String args[]) {
         initialiser();
-        //		System.out.println("test");
-        //	    Button.waitForAnyPress();
-        //		for (Map.Entry<Integer, Double> entry : lineProbabilities.entrySet()) {
-        //		    System.out.print(" "+entry.getValue() +" ");
-        //		}
-        //	    Button.waitForAnyPress();
-        //System.out.println(lineProbabilities.values());
-        //Button.waitForAnyPress();
         
         localiseLine();
         
-        
-        /*initialiser();
-         while(true){
+        /* 
+        while(true){
+            if(stateTracker == 0){
+                localiseLine();
+            } 
+            else 
+                if(stateTracker == 1){
+                    potentialPlan();
+                }
+                else if(stateTracker == 2){
          
-         if(stateTracker == 0){
-         
-         localiseLine();
-         
-         }
-         
-         else if(stateTracker == 1){
-         
-         potentialPlan();
-         
-         }
-         
-         else if(stateTracker == 2){
-         
-         }
+                }
          }*/
-    }
-    
+    }   
 }
-
