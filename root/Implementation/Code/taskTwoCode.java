@@ -65,7 +65,7 @@ public class taskTwoCode {
     }
     
     
-    public static void localise(boolean[] lineValues,float sensorWorks,float motorWorks){
+    public static double localise(boolean[] lineValues,float sensorWorks,float motorWorks){
         boolean lightValue;
         double totalProb;
         double[] lineProbs = new double[lineValues.length];
@@ -132,7 +132,11 @@ public class taskTwoCode {
                     maxInd = i;
                 }
             }
-            System.out.println(maxInd+1 + " " + maxVal);
+            
+            if(maxVal > 0.75) {
+                return (maxInd*2.0);
+            }
+            
         }
     }
     public static void main(String[] args) {
