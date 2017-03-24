@@ -1,17 +1,12 @@
 package leJOSEV3;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.Motor;
 import lejos.hardware.port.MotorPort;
-import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
-import lejos.utility.Delay;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
@@ -65,10 +60,9 @@ public class FinalJackTwo {
 	static double motorCorrect;
 	static double motorWrong;
 	
-	
 	static int stateTracker;
 
-	public static void initialiser() {
+	public static void init() {
 		colorSensor = new EV3ColorSensor(SensorPort.S4);
 		gyroSensor = new EV3GyroSensor(SensorPort.S1);
 		impactSensor = new EV3TouchSensor(SensorPort.S3);
@@ -85,7 +79,6 @@ public class FinalJackTwo {
 		impactSamples = new float[1];
 		soundSamples = new float[1];
 
-		
 		toSynchronise = new EV3LargeRegulatedMotor[]{motorRight};
 
 		wheelCircumference = 2*2.75*Math.PI;
@@ -113,7 +106,6 @@ public class FinalJackTwo {
 		stateTracker = 0;
 		System.out.println("localised press button to continue:");
 		Button.waitForAnyPress();
-		
 	}
 
 	public static void moveForward(double distance){
@@ -127,8 +119,7 @@ public class FinalJackTwo {
 
 		motorLeft.endSynchronization();
 		motorLeft.waitComplete();
-		motorRight.waitComplete();
-		
+		motorRight.waitComplete();	
 	}
 
 	public static void moveBackward(double distance) {
@@ -148,8 +139,6 @@ public class FinalJackTwo {
 	public static void rotateLeft(double targetAngle) {
 		gyroSensor.reset();
 		while(true){
-
-
 			currentAngle = readAngle(angleSamples);
 			System.out.println(currentAngle);
 			errorAngle = targetAngle - currentAngle;
@@ -171,7 +160,6 @@ public class FinalJackTwo {
 
 			motorLeft.endSynchronization();
 			errorLastAngle = errorAngle;
-
 		}
 	}
 
@@ -195,28 +183,30 @@ public class FinalJackTwo {
 
 			motorLeft.endSynchronization();
 			errorLastAngle = errorAngle;
-
 		}
 	}
-
+	
+	//Read Angel
 	public static float readAngle(float[] sampleArray){
 		angleProvider.fetchSample(sampleArray, 0);
 		return sampleArray[0];
 	}
 	
+	//Read Light
 	public static float readLight(float[] sampleArray) {
 		colourProvider.fetchSample(sampleArray, 0);
 		return sampleArray[0];
-		
 	}
 	
-	public static float readImpact(float[] sampleArray) {
-		impactProvider.fetchSample(sampleArray, 0);
+	//Read Sound
+	public static float readSound(float[] sampleArray) {
+		soundProvider.fetchSample(sampleArray, 0);
 		return sampleArray[0];
 	}
 	
-	public static float readSound(float[] sampleArray) {
-		soundProvider.fetchSample(sampleArray, 0);
+	//Read Impact
+	public static float readImpact(float[] sampleArray) {
+		impactProvider.fetchSample(sampleArray, 0);
 		return sampleArray[0];
 	}
 	
@@ -232,7 +222,6 @@ public class FinalJackTwo {
 	
 	//Task One...
 	public static void localiseLine(){
-		
 		while(notLocalised) {
 			//Take a light reading...
 			lightValue = processLight(readLight(lightSamples));
@@ -267,28 +256,24 @@ public class FinalJackTwo {
 		}
 	}
 	
-	
-	public static void impactStop() {
-		
+	public static void senseBeepReverse(){
 		impactValue = (int)(readImpact(impactSamples));
-		
+		//If impact seen
 		if(impactValue == 1) {
-			stopMotors();
-			playBeep();
+			//Stop Motors Immediately
+			motorLeft.stop();
+			motorRight.stop();
+			//Signal goal achieved
+			Sound.beep();
+			//Move Backwards
+			moveBackward(5.0);
+			//rotate right
+			rotateRight(65);
 		}
-	}
-	
-	public static void stopMotors() {
-		motorLeft.stop();
-		motorRight.stop();
-	}
-	
-	public static void playBeep() {
-		Sound.beep();
 	}
 
 	public static void main(String args[]) {
-		initialiser();
+		init();
 //		System.out.println("test");
 //	    Button.waitForAnyPress();
 //		for (Map.Entry<Integer, Double> entry : lineProbabilities.entrySet()) {
@@ -300,27 +285,18 @@ public class FinalJackTwo {
 
 		localiseLine();
 
-
-		/*initialiser();
-		while(true){
-			
-			if(stateTracker == 0){
-				
-				localiseLine();
-				
-			}
-			
-			else if(stateTracker == 1){
-				
-				potentialPlan();
-				
-			}
-			
-			else if(stateTracker == 2){
-				
-			}
-		}*/
-	}
-	
+//		while(true){
+//			
+//			if(stateTracker == 0){
+//				localiseLine();
+//			}
+//			
+//			else if(stateTracker == 1){
+//				potentialPlan();
+//			}
+//			
+//			else if(stateTracker == 2){
+//			}
+//		}
+	}	
 }
-
