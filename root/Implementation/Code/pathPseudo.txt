@@ -1,0 +1,55 @@
+while(current.hasNext) {
+
+	for(node in list) {
+
+		if((node + 1).xPos - (current.xPos) == 1 ) {
+			
+			rotateRight(90);
+			
+			north -> oldEast;
+			
+			east -> oldSouth;
+			
+			south -> oldWest;
+			
+			west -> oldNorth;
+			
+			moveForward(2);
+			
+		}
+		
+		else if((node+1).xPos - current.xPos == -1) {
+			
+			rotateLeft(90);
+			
+			north -> oldWest;
+			
+			east -> oldNorth;
+			
+			south ->oldEast;
+			
+			west -> oldSouth;
+			
+			moveForward(2);
+			
+			}
+		
+		else if((node+1).yPos - current.yPos == 1) {
+		
+			moveForward(2);
+		
+			}
+			
+		else if((node+1).yPos - current.yPos == -1) {
+		
+			moveBackward(2);
+		
+			}
+
+
+
+
+
+	}
+
+}
