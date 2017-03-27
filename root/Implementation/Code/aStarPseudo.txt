@@ -1,0 +1,32 @@
+initialise openList
+initialise closedList
+
+add startNode to openList -> f.Set(0)
+
+while(openList !empty) {
+	node.lowestF-> q
+	q.remove -> openList
+	generateNeighbours of q, setParents -> q
+	
+	for(each neighbour) {
+		if(neighbour == goal) {
+			return finished;
+		}
+		
+		set g,h,f of neighbour
+		
+		if(neighbour in openList with lower f) {
+			skip node;
+		}
+		
+		if(neighbour in closedList with lower f) {
+			skip node;
+		}
+		
+		else {
+			add neighbour -> openList;
+		}
+	}
+	
+	q -> closedList;
+}
