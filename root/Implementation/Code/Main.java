@@ -14,6 +14,7 @@ import lejos.robotics.SampleProvider;
 
 public class Main {
     
+    //Node Class
     private static class Node{
         public Node parent;
         public int xPos;
@@ -22,6 +23,7 @@ public class Main {
         public float h;
         public float f;
         
+        //Constructor for the private Node Class
         public Node(int xPos, int yPos){
             this.xPos = xPos;
             this.yPos = yPos;
@@ -64,10 +66,11 @@ public class Main {
     
     static int tileReached;
     
-    static boolean[][] task1ArrayOfArrays1;
-    static boolean[][] task1ArrayOfArrays2;
-    static boolean[][] task2ArrayOfArrays1;
+    static boolean[][] task1task2GoingArena;
+    static boolean[][] task1ReturningArena;
+    static boolean[][] task2ReturningArena;
     
+    //Initializer Method
     public static void init(){
         colorSensor = new EV3ColorSensor(SensorPort.S4);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
@@ -96,6 +99,7 @@ public class Main {
         lineValues = new boolean[]{true, false, true, false, false, true, true, false, true, true, false, false, true, true, true, false, true, true, true, false, false, true, true, true, false, false, false, true, true, true, true, false, false, false};
     }
     
+    //Process Light
     public static boolean processLight(float[] sampleArray){
         colourProvider.fetchSample(sampleArray,0);
         if(sampleArray[0] < 0.6) {
@@ -105,6 +109,7 @@ public class Main {
         }
     }
     
+    //Process Obstacle
     public static String processObstacle(float[] sampleArray) {
         obstacleProvider.fetchSample(sampleArray, 0);
         
@@ -136,13 +141,10 @@ public class Main {
     //Move Forward
     public static void moveForward(double distance){
         int measure = (int)Math.round((distance/wheelCircumference)*360.0);
-        
         motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
         motorLeft.startSynchronization();
-        
         motorLeft.rotate(measure,true);
-        motorRight.rotate(measure,true);
-        
+        motorRight.rotate(measure,true);     
         motorLeft.endSynchronization();
         motorLeft.waitComplete();
         motorRight.waitComplete();
@@ -151,118 +153,40 @@ public class Main {
     //Move Backward
     public static void moveBackward(double distance) {
         int measure = (int)Math.round((distance/wheelCircumference)*360.0 * (-1));
-        
         motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
         motorLeft.startSynchronization();
-        
         motorLeft.rotate(measure,true);
         motorRight.rotate(measure,true);
-        
         motorLeft.endSynchronization();
         motorLeft.waitComplete();
         motorRight.waitComplete();
     }
     
-    //	public static void rotate(double targetAngle) {
-    //        gyroSensor.reset();
-    //        while(true){
-    //
-    //            currentAngle = readAngle(gyroSamples);
-    //            errorAngle = targetAngle - currentAngle;
-    //            derivativeAngle = errorAngle + errorLastAngle;
-    //            correctionAngle = kP*errorAngle + kD*derivativeAngle;
-    //
-    //            motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
-    //            motorLeft.startSynchronization();
-    //
-    //            motorLeft.setSpeed((int) correctionAngle);
-    //            motorRight.setSpeed((int) correctionAngle);
-    //            if(currentAngle > targetAngle) {
-    //                motorLeft.backward();
-    //                motorRight.forward();
-    //            } else {
-    //                motorLeft.forward();
-    //                motorRight.backward();
-    //            }
-    //
-    //            motorLeft.endSynchronization();
-    //            errorLastAngle = errorAngle;
-    //
-    //        }
-    //    }
-    
-    /*public static void rotateLeft(double degrees) {
-     resetGyro();
-     while(true) {
-     motorLeft.backward();
-     motorRight.forward();
-     
-     while (getGyroAngle() < degrees) {
-     Thread.yield();
-     }
-     motorLeft.stop();
-     motorRight.stop();
-     
-     Delay.msDelay(100);
-     
-     if (getGyroAngle() > degrees) {
-     motorLeft.setSpeed(30);
-     motorRight.setSpeed(30);
-     //turn left slowly to correct the rotation angle
-     motorLeft.forward();
-     motorRight.backward();
-     while (getGyroAngle() > degrees + 3) {
-     Thread.yield();
-     }
-     motorLeft.stop();
-     motorRight.stop();
-     }
-     resetGyroTacho();
-     }
-     }*/
-    
+    //Rotate left by 90 degrees
     public static void rotateLeft90(){
         motorLeft.rotate(-202,true);
         motorRight.rotate(202);
     }
     
+    //Rotate right by 90 degrees
     public static void rotateRight90(){
         motorLeft.rotate(202,true);
         motorRight.rotate(-202);
     }
    
+    //Rotate Right by 45 degrees
     public static void rotateRight45() {
         motorLeft.rotate(101,true);
         motorRight.rotate(-101);
     }
     
+    //Rotate Left by 90 degrees
     public static void rotateLeft45() {
         motorLeft.rotate(-101, true);
         motorRight.rotate(101);
     }
-
-    //	public static float getGyroAngleRaw() {
-    //		gyroSamples.fetchSample(angle, 0);
-    //		return angle[0];
-    //	}
     
-    //	public static float getGyroAngle() {
-    //		float rawAngle = getGyroAngleRaw();
-    //		return rawAngle - gyroTacho;
-    //	}
-    
-    //	public static void resetGyroTacho() {
-    //		gyroTacho += getGyroAngle();
-    //	}
-    
-    //	public static void resetGyro() {
-    //		if (gyroSensor != null) {
-    //			gyroSensor.reset();
-    //			gyroSamples = gyroSensor.getAngleMode();
-    //			gyroTacho = 0;
-    //		}
-    //	}
-    
+    //Localization Method
     public static int localise(boolean[] lineValues,float sensorWorks,float motorWorks){
         boolean lightValue;
         double totalProb;
@@ -274,6 +198,7 @@ public class Main {
         
         while(true){
             lightValue = processLight(lightSamples);
+            
             /*Update*/
             for(int i=0;i<lineProbs.length;i++){
                 if(lightValue == lineValues[i]) {
@@ -282,17 +207,20 @@ public class Main {
                     lineProbs[i]=((1-sensorWorks)*lineProbs[i]);
                 }
             }
+            
             /*SUM*/
             totalProb = 0;
             for(int i=0;i<lineProbs.length;i++){
                 totalProb+=lineProbs[i];
             }
+            
             /*NORMALISE*/
             for(int i=0;i<lineProbs.length;i++){
                 lineProbs[i] = lineProbs[i]/totalProb;
             }
             //Moves the robot forward 2.0cm...
             moveForward(1.8);
+            
             /*UPDATE*/
             for(int i=lineProbs.length -1; i >= 0; i--){
                 if(i==0){
@@ -302,11 +230,13 @@ public class Main {
                     lineProbs[i]=(lineProbs[i]*(1-motorWorks)+lineProbs[i-1]*motorWorks);
                 }
             }
+            
             /* SUM */
             totalProb = 0;
             for(int i=0;i<lineProbs.length;i++){
                 totalProb+=lineProbs[i];
             }
+            
             /* NORMALISE */
             for(int i=0;i<lineProbs.length;i++){
                 lineProbs[i] = lineProbs[i]/totalProb;
@@ -328,23 +258,7 @@ public class Main {
         }
     }
     
-    public static String senseBeepReverse(){
-        moveForward(18.0);
-        while(readImpact(impactSamples) != 1) {
-            moveForward(1.0);
-        }
-        motorLeft.stop();
-        motorRight.stop();
-        colourGoal = processObstacle(lightSamples);
-        Sound.beep();
-        moveBackward(22.0);
-        motorLeft.rotate(202,true);
-        motorRight.rotate(-202);
-        
-        return colourGoal;
-    }
-    
-    
+    //A* Path Planning Algorithm...
     public static int calcMan(Node a,Node b){
         return Math.abs(a.xPos-b.xPos)+Math.abs(a.yPos-b.yPos);
     }
@@ -371,7 +285,7 @@ public class Main {
         subject.f = subject.g + subject.h;
     }
     
-    public static Node calculateStart (int tileReached) {
+    public static Node calculateStart(int tileReached) {
         int nodeX;
         int nodeY;
         if(tileReached < 15) {
@@ -458,6 +372,28 @@ public class Main {
         return null;
     }
     
+    //On reaching outside goal
+    // - Move into goal, 
+    // - Signal arrival, 
+    // - Reverse out of the goal
+    // - turn right by 90 degrees
+    // - Return the Color read within the goal
+    public static String senseBeepReverse(){
+        moveForward(18.0);
+        while(readImpact(impactSamples) != 1) {
+            moveForward(1.0);
+        }
+        Sound.beep();
+        motorLeft.stop();
+        motorRight.stop();
+        colourGoal = processObstacle(lightSamples);
+        moveBackward(23.0);
+        rotateRight90();
+        
+        return colourGoal;
+    }
+    
+    //Move to Grid 
     public static void moveToGrid(int tileReached){
         if(tileReached > 17){
             int val = tileReached - 17;
@@ -468,6 +404,7 @@ public class Main {
         }
     }
     
+    //Move along the path to the Goal
     public static void moveFromPath(ArrayList<Node> path){
         int counter = 4000;
         double dist = 16;
@@ -517,17 +454,8 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        task1ArrayOfArrays1 = new boolean[][] { 	
-            {false, false, false, false, false, false, false, false},
-            {false, true, true, true, true, true, true, true},
-            {false, false, false, false, false, false, false, true},
-            {false, false, false, true, true, false, true, true},
-            {false, false, false, false, false, true, true, true},
-            {false, false, false, true, true, true, true, true},
-            {false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false}
-        };
-        task1ArrayOfArrays2 = new boolean[][] { 	
+        //Task 1 and Task 2 reaching the goal and stopping just outside the goal
+        task1task2GoingArena = new boolean[][] {    
             {false, false, false, false, false, false, false, false},
             {false, true, true, true, true, true, true, true},
             {false, false, false, false, false, false, false, true},
@@ -538,36 +466,94 @@ public class Main {
             {false, false, false, false, false, false, false, false}
         };
         
-        task2ArrayOfArrays1 = new boolean[][] {
+        //Task 1 returning back to the starting point from the same route and on arrival signal
+        task1ReturningArena = new boolean[][] {     
+            {false, false, false, false, false, false, false, false},
+            {false, true, true, true, true, true, true, true},
+            {false, false, false, false, false, false, false, true},
+            {false, false, false, true, true, false, true, true},
+            {false, false, false, false, false, true, true, true},
+            {false, false, false, true, true, true, true, true},
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false}
+        };
+        
+        //Task 2 returning back to the starting point from a new route and on arrival signal
+        task2ReturningArena = new boolean[][] {
             {false, false, false, false, false, false, false, false},
             {false, false, false, false, false, false, false, false},
             {false, false, false, false, false, false, false, false},
             {false, false, false, false, false, false, false, false},
-            {true, true, true, true, true, false, false, false},
-            {true, true, true, true, true, true, false, false},
+            {true, true, true, true, true, false, false, true},
+            {true, true, true, true, true, true, true, true},
             {true, true, true, true, true, true, true, false},
             {true, true, true, true, true, true, false, false},
         };
         
+        //Initialize the variables
         init();
+        
+        //On a press of a button start to initialzie
         Button.waitForAnyPress();
         int i = localise(lineValues,(float)0.95,(float)0.95);
         moveToGrid(i);
         rotateLeft45();
+        
+        
+        //Task 1
+        //From point of initialization, start A* path planning
         Node start1 = new Node(2,2);
         Node end1 = new Node(4,7);
-        ArrayList<Node> path = findPath(start1,end1,task1ArrayOfArrays1);
+        ArrayList<Node> path = findPath(start1, end1, task1task2GoingArena);
         for(Node n : path){
             System.out.println(n.xPos+" , "+n.yPos);
         }
         moveFromPath(path);
-//     	rotateLeft90();
-        Node start2 = new Node(4,7);
-        Node end2 = new Node(2,2);
-        ArrayList<Node> path2 = findPath(start2,end2,task2ArrayOfArrays1);
-        for(Node n : path2){
-            System.out.println(n.xPos+" , "+n.yPos);
+        rotateLeft90();
+        rotateLeft90();
+        //turn(180);
+        ArrayList<Node> reversePath = new ArrayList<Node>();
+        for(int a = path.size()-1; a >= 0; a--) {
+            reversePath.add(path.get(a));
         }
-        moveFromPath(path2);
+        moveFromPath(reversePath);
+        rotateLeft45();
+        while(readImpact(impactSamples) != 1) {
+            moveForward(1.0);
+        }
+        
+       /*
+        //Task 2
+        //on arrival of goal beep and reverse out and turn right by 90 degrees
+        senseBeepReverse();
+        
+        if (colourGoal == "Red"){
+            //Path plan back from a new route back to the starting position
+            Node start2 = new Node(4,7);
+            Node end2 = new Node(2,2);
+            ArrayList<Node> path2 = findPath(start2, end2, task2ReturningArena);
+            for(Node n : path2){
+                System.out.println(n.xPos+" , "+n.yPos);
+            }
+            moveFromPath(path2);
+        }else if(colourGoal == "Green"){
+            //Path plan back from a new route back to the starting position
+            Node start2 = new Node(4,7);
+            Node end2 = new Node(2,2);
+            ArrayList<Node> path2 = findPath(start2, end2, task2ReturningArena);
+            for(Node n : path2){
+                System.out.println(n.xPos+" , "+n.yPos);
+            }
+            moveFromPath(path2);
+        }
+        
+        //while no Obstacle keeping moving, otherwise, singal starting position reached, and stop motors
+        while(readImpact(impactSamples) != 1) {
+            moveForward(1.0);
+        }
+        Sound.beep();
+        motorLeft.stop();
+        motorRight.stop();
+        */
     }
 }
