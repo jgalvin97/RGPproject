@@ -14,6 +14,7 @@ import lejos.robotics.SampleProvider;
 
 public class taskTwoCode {
     
+    //Node Class
     private static class Node{
         public Node parent;
         public int xPos;
@@ -22,6 +23,7 @@ public class taskTwoCode {
         public float h;
         public float f;
         
+        //Node constructor
         public Node(int xPos, int yPos){
             this.xPos = xPos;
             this.yPos = yPos;
@@ -67,19 +69,24 @@ public class taskTwoCode {
     static boolean[][] arrayOfArrays1;
     static boolean[][] arrayOfArrays2;
     static boolean[][] arrayOfArrays3;
+    static boolean[][] arrayOfArrays4;
     
+    //Initializer
     public static void init(){
         colorSensor = new EV3ColorSensor(SensorPort.S4);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
         motorRight = new EV3LargeRegulatedMotor(MotorPort.D);
         
+        motorLeft.stop();
+        motorRight.stop();
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
         motorLeft.setAcceleration(2000);
         motorRight.setAcceleration(2000);
         
         gyroSensor = new EV3GyroSensor(SensorPort.S1);
-        //gyroSamples = gyroSensor.getAngleMode();
+        gyroProvider = gyroSensor.getAngleMode();
+        gyroSamples = new float[1];
         gyroTacho = 0;
         
         impactSensor = new EV3TouchSensor(SensorPort.S3);
@@ -96,6 +103,7 @@ public class taskTwoCode {
         lineValues = new boolean[]{true, false, true, false, false, true, true, false, true, true, false, false, true, true, true, false, true, true, true, false, false, true, true, true, false, false, false, true, true, true, true, false, false, false};
     }
     
+    //Process Light
     public static boolean processLight(float[] sampleArray){
         colourProvider.fetchSample(sampleArray,0);
         if(sampleArray[0] < 0.6) {
@@ -105,9 +113,9 @@ public class taskTwoCode {
         }
     }
     
+    //Process Obstacle
     public static String processObstacle(float[] sampleArray) {
         obstacleProvider.fetchSample(sampleArray, 0);
-        
         if(sampleArray[0] < 0.5) {
             return "GREEN";
         }else {
@@ -133,6 +141,7 @@ public class taskTwoCode {
         return sampleArray[0];
     }
     
+    //Move Forwards
     public static void moveForward(double distance){
         int measure = (int)Math.round((distance/wheelCircumference)*360.0);
         
@@ -147,6 +156,7 @@ public class taskTwoCode {
         motorRight.waitComplete();
     }
     
+    //Move Backwards
     public static void moveBackward(double distance) {
         int measure = (int)Math.round((distance/wheelCircumference)*360.0 * (-1));
         
@@ -161,33 +171,33 @@ public class taskTwoCode {
         motorRight.waitComplete();
     }
     
-    //	public static void rotate(double targetAngle) {
-    //        gyroSensor.reset();
-    //        while(true){
-    //
-    //            currentAngle = readAngle(gyroSamples);
-    //            errorAngle = targetAngle - currentAngle;
-    //            derivativeAngle = errorAngle + errorLastAngle;
-    //            correctionAngle = kP*errorAngle + kD*derivativeAngle;
-    //
-    //            motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
-    //            motorLeft.startSynchronization();
-    //
-    //            motorLeft.setSpeed((int) correctionAngle);
-    //            motorRight.setSpeed((int) correctionAngle);
-    //            if(currentAngle > targetAngle) {
-    //                motorLeft.backward();
-    //                motorRight.forward();
-    //            } else {
-    //                motorLeft.forward();
-    //                motorRight.backward();
-    //            }
-    //
-    //            motorLeft.endSynchronization();
-    //            errorLastAngle = errorAngle;
-    //
-    //        }
-    //    }
+    /*public static void rotate(double targetAngle) {
+     gyroSensor.reset();
+     while(true){
+     
+     currentAngle = readAngle(gyroSamples);
+     errorAngle = targetAngle - currentAngle;
+     derivativeAngle = errorAngle + errorLastAngle;
+     correctionAngle = kP*errorAngle + kD*derivativeAngle;
+     
+     motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[]{motorRight});
+     motorLeft.startSynchronization();
+     
+     motorLeft.setSpeed((int) correctionAngle);
+     motorRight.setSpeed((int) correctionAngle);
+     if(currentAngle > targetAngle) {
+     motorLeft.backward();
+     motorRight.forward();
+     } else {
+     motorLeft.forward();
+     motorRight.backward();
+     }
+     
+     motorLeft.endSynchronization();
+     errorLastAngle = errorAngle;
+     
+     }
+     }*/
     
     /*public static void rotateLeft(double degrees) {
      resetGyro();
@@ -219,52 +229,51 @@ public class taskTwoCode {
      }
      }*/
     
+    //Rotate Left by 90 Degrees
     public static void rotateLeft90(){
-        motorLeft.rotate(-202,true);
-        motorRight.rotate(202);
+        motorLeft.rotate(-199,true);
+        motorRight.rotate(199);
     }
     
+    //Rotate Right by 90 Degrees
     public static void rotateRight90(){
-        
-        
-        motorLeft.rotate(202,true);
-        motorRight.rotate(-202);
+        motorLeft.rotate(199,true);
+        motorRight.rotate(-199);
     }
     
-    public static void modifyRotateRight90() {
-        gyroSensor.reset();
-        
-        
-        
-        motorLeft.rotate(202,true);
-        motorRight.rotate(-202);
-        
-        double angle = readAngle(gyroSamples);
-        
-        motorLeft.rotate((int)angle - 90,true);
-        motorRight.rotate((int) -(angle-90));
-        
-        
-    }
+    /*public static void modifyRotateRight90() {
+     gyroSensor.reset();
+     motorLeft.rotate(202,true);
+     motorRight.rotate(-202);
+     double angle = readAngle(gyroSamples);
+     double distToTurn = 2 * Math.PI * 6.2*(angle/360);
+     double inputAngle = distToTurn/wheelCircumference;
+     motorLeft.rotate((int)(inputAngle),true);
+     motorRight.rotate((int) (-inputAngle));
+     }*/
     
-    public static void modifyRotateLeft90()
+    /*public static void modifyRotateLeft90() {
+     gyroSensor.reset();
+     motorLeft.rotate(202,true);
+     motorRight.rotate(-202);
+     double angle = readAngle(gyroSamples);
+     double distToTurn = 2 * Math.PI * 6.2*(angle/360);
+     double inputAngle = distToTurn/wheelCircumference;
+     motorLeft.rotate((int)(-inputAngle),true);
+     motorRight.rotate((int) (inputAngle));
+     }*/
     
-    
-    
+    //Rotate Right by 45 Degrees
     public static void rotateRight45() {
-        
         motorLeft.rotate(101,true);
         motorRight.rotate(-101);
-        
     }
     
+    //Rotate Left by 45 Degress
     public static void rotateLeft45() {
         motorLeft.rotate(-101, true);
         motorRight.rotate(101);
     }
-    
-    
-    
     
     //	public static float getGyroAngleRaw() {
     //		gyroSamples.fetchSample(angle, 0);
@@ -288,6 +297,7 @@ public class taskTwoCode {
     //		}
     //	}
     
+    //Localization Method
     public static int localise(boolean[] lineValues,float sensorWorks,float motorWorks){
         boolean lightValue;
         double totalProb;
@@ -299,6 +309,7 @@ public class taskTwoCode {
         
         while(true){
             lightValue = processLight(lightSamples);
+            
             /*Update*/
             for(int i=0;i<lineProbs.length;i++){
                 if(lightValue == lineValues[i]) {
@@ -307,31 +318,35 @@ public class taskTwoCode {
                     lineProbs[i]=((1-sensorWorks)*lineProbs[i]);
                 }
             }
+            
             /*SUM*/
             totalProb = 0;
             for(int i=0;i<lineProbs.length;i++){
                 totalProb+=lineProbs[i];
             }
+            
             /*NORMALISE*/
             for(int i=0;i<lineProbs.length;i++){
                 lineProbs[i] = lineProbs[i]/totalProb;
             }
             //Moves the robot forward 2.0cm...
             moveForward(1.8);
+            
             /*UPDATE*/
             for(int i=lineProbs.length -1; i >= 0; i--){
                 if(i==0){
                     lineProbs[i]=(lineProbs[i]*(1-motorWorks));
-                }
-                else{
+                }else{
                     lineProbs[i]=(lineProbs[i]*(1-motorWorks)+lineProbs[i-1]*motorWorks);
                 }
             }
+            
             /* SUM */
             totalProb = 0;
             for(int i=0;i<lineProbs.length;i++){
                 totalProb+=lineProbs[i];
             }
+            
             /* NORMALISE */
             for(int i=0;i<lineProbs.length;i++){
                 lineProbs[i] = lineProbs[i]/totalProb;
@@ -353,23 +368,7 @@ public class taskTwoCode {
         }
     }
     
-    public static String senseBeepReverse(){
-        moveForward(18.0);
-        while(readImpact(impactSamples) != 1) {
-            moveForward(1.0);
-        }
-        motorLeft.stop();
-        motorRight.stop();
-        colourGoal = processObstacle(lightSamples);
-        Sound.beep();
-        moveBackward(22.0);
-        motorLeft.rotate(202,true);
-        motorRight.rotate(-202);
-        
-        return colourGoal;
-    }
-    
-    
+    //A* Path Finding Methods
     public static int calcMan(Node a,Node b){
         return Math.abs(a.xPos-b.xPos)+Math.abs(a.yPos-b.yPos);
     }
@@ -378,8 +377,7 @@ public class taskTwoCode {
         if(a.isEmpty()){
             System.out.println("ArrayList is empty");
             return null;
-        }
-        else{
+        }else{
             Node tmp = a.get(0);
             float i = a.get(0).f;
             for(Node n:a){
@@ -398,27 +396,19 @@ public class taskTwoCode {
     }
     
     public static Node calculateStart (int tileReached) {
-        
         int nodeX;
         int nodeY;
-        
         if(tileReached < 15) {
             nodeX = 1;
             nodeY = 1;
-        }
-        
-        else if(tileReached > 15 && tileReached < 30) {
+        }else if(tileReached > 15 && tileReached < 30) {
+            nodeX = 2;
+            nodeY = 2;
+        }else {
             nodeX = 2;
             nodeY = 2;
         }
-        
-        else {
-            nodeX = 2;
-            nodeY = 2;
-        }
-        
         Node startNode = new Node(nodeX, nodeY);
-        
         return startNode;
     }
     
@@ -435,11 +425,9 @@ public class taskTwoCode {
         }
         if(n.xPos<0 || n.yPos<0 || n.xPos >= grid.length || n.yPos >= grid[0].length){
             return false;
-        }
-        else if(grid[n.xPos][n.yPos]){
+        }else if(grid[n.xPos][n.yPos]){
             return true;
-        }
-        else{
+        }else{
             return false;
         }
     }
@@ -494,17 +482,21 @@ public class taskTwoCode {
         return null;
     }
     
+    //Move to Grid
     public static void moveToGrid(int tileReached){
         if(tileReached > 17){
             int val = tileReached - 17;
             moveBackward(val*2.0);
-        }
-        else if(tileReached < 17){
+        }else if(tileReached < 17){
             int val = 17 - tileReached;
             moveForward(val*2.0);
+        }else {
+            motorLeft.close();
+            motorRight.close();
         }
     }
     
+    //Move from Path
     public static void moveFromPath(ArrayList<Node> path){
         int counter = 4000;
         double dist = 16;
@@ -520,8 +512,7 @@ public class taskTwoCode {
                         case 2: rotateLeft90();rotateLeft90();moveForward(12);counter-=2;break;
                         case 3: rotateRight90();moveForward(dist);counter++;break;
                     }
-                }
-                else if(path.get(i).yPos == path.get(i-1).yPos - 1){
+                }else if(path.get(i).yPos == path.get(i-1).yPos - 1){
                     //move south
                     switch(counter%4){
                         case 0: rotateLeft90();rotateLeft90();moveForward(dist);counter+=2;break;
@@ -530,8 +521,7 @@ public class taskTwoCode {
                         case 3: rotateLeft90();moveForward(dist);counter--;break;
                     }
                 }
-            }
-            else if(path.get(i).yPos==path.get(i-1).yPos){
+            }else if(path.get(i).yPos==path.get(i-1).yPos){
                 //horizontal movement
                 if(path.get(i).xPos == path.get(i-1).xPos + 1){
                     //move east
@@ -542,8 +532,7 @@ public class taskTwoCode {
                         case 3: rotateRight90();rotateRight90();moveForward(dist);counter+=2;break;
                             
                     }
-                }
-                else if(path.get(i).xPos == path.get(i-1).xPos - 1){
+                }else if(path.get(i).xPos == path.get(i-1).xPos - 1){
                     //move west
                     switch(counter%4){
                         case 0: rotateLeft90();moveForward(dist);counter--;break;
@@ -552,14 +541,64 @@ public class taskTwoCode {
                         case 3: moveForward(dist);break;
                     }
                 }
-            }            
+            }
         }
     }
     
-    public static void main(String[] args) {
-        boolean[][] grid = new boolean[][] { {false,false,false,true},{false,false,true,true},{false,true,true,false},{true,true,false,false}};
+    //Sense, Beep and Reverse
+    public static String senseBeepReverse(){
+        moveForward(18.0);
+        while(readImpact(impactSamples) != 1) {
+            moveForward(1.0);
+        }
+        motorLeft.stop();
+        motorRight.stop();
+        colourGoal = processObstacle(lightSamples);
+        Sound.beep();
+        moveBackward(22.0);
+        rotateRight90();
         
-        arrayOfArrays1 = new boolean[][] { 	
+        return colourGoal;
+    }
+    
+    //Task 1 Obstacle on the Left
+    public static void task1ObstacleLeft() {
+        moveForward(1.0);
+        //Task 1 - Obstacle on the left - Going and Coming Back
+        arrayOfArrays2 = new boolean[][] {
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false},
+            {false, false, true, true, true, true, true, true},
+            {false, false, false, true, true, false, true, true},
+            {false, false, false, false, false, true, true, true},
+            {false, false, false, true, true, true, true, true},
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false}
+        };
+        
+        Node start = new Node(2,2);
+        Node end = new Node(4,7);
+        ArrayList<Node> path = findPath(start,end,arrayOfArrays2);
+        for(Node n:path){
+            System.out.println(n.xPos+" , "+n.yPos);
+        }
+        moveFromPath(path);
+        Sound.beep();
+        Sound.setVolume(Sound.VOL_MAX);
+        moveBackward(2.0);
+        rotateLeft90();
+        ArrayList<Node> reversePath = new ArrayList<Node>();
+        for(int a = path.size()-1; a >= 0; a--) {
+            reversePath.add(path.get(a));
+        }
+        moveFromPath(reversePath);
+        rotateRight45();
+    }
+    
+    //Task 1 Obstacle on the Right
+    public static void task1ObstacleRight() {
+        //Task 1 - Obstacle on the right - Going and Coming Back
+        arrayOfArrays1 = new boolean[][] {
             {false, false, false, false, false, false, false, false},
             {false, true, true, true, true, true, true, true},
             {false, false, false, false, false, false, false, true},
@@ -569,36 +608,7 @@ public class taskTwoCode {
             {false, false, false, false, false, false, false, false},
             {false, false, false, false, false, false, false, false}
         };
-        arrayOfArrays2 = new boolean[][] { 	
-            {false, false, false, false, false, false, false, false},
-            {false, true, true, true, true, true, true, true},
-            {false, false, false, false, false, false, false, true},
-            {false, false, false, true, true, false, true, true},
-            {false, false, false, false, false, true, true, true},
-            {false, false, false, true, true, true, true, true},
-            {false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false}
-        };
         
-        arrayOfArrays3 = new boolean[][] {
-            
-            {false, false, false, false, false, false, false, false},
-            {false, true, true, true, true, true, true, true},
-            {false, false, false, false, false, false, false, true},
-            {false, false, false, true, true, false, true, true},
-            {false, false, false, false, false, true, true, true},
-            {false, false, false, true, true, true, true, true},
-            {false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false}
-            
-        };
-        
-        
-        init();
-        Button.waitForAnyPress();
-        int i = localise(lineValues,(float)0.95,(float)0.95);
-        moveToGrid(i);
-        rotateLeft45();
         Node start = new Node(2,2);
         Node end = new Node(4,7);
         ArrayList<Node> path = findPath(start,end,arrayOfArrays1);
@@ -606,17 +616,96 @@ public class taskTwoCode {
             System.out.println(n.xPos+" , "+n.yPos);
         }
         moveFromPath(path);
+        Sound.beep();
+        Sound.setVolume(Sound.VOL_MAX);
+        moveBackward(4.0);
         rotateLeft90();
-        rotateLeft90();
-        //turn(180);
         ArrayList<Node> reversePath = new ArrayList<Node>();
         for(int a = path.size()-1; a >= 0; a--) {
             reversePath.add(path.get(a));
         }
         moveFromPath(reversePath);
+        rotateRight90();
+        rotateRight45();
+    }
+    
+    //Task 2 Obstacle on the Left
+    public static void task2(){
+        //Task 2 returning back to the starting point from a new route and on arrival signal
+        //Left Obstacle
+        arrayOfArrays3 = new boolean[][] {
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false},
+            {true, true, true, true, true, false, false, true},
+            {true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, false},
+            {true, true, true, true, true, true, false, false},
+        };
+        //Right Obstacle
+        arrayOfArrays4 = new boolean[][] {
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false},
+            {true, true, true, true, true, false, false, true},
+            {true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, false},
+            {true, true, true, true, true, true, false, false},
+        };
+        
+        //on arrival of goal beep and reverse out and turn right by 90 degrees
+        senseBeepReverse();
+        
+        //go through obstacle On the left
+        if (colourGoal == "RED"){
+            //Path plan back from a new route back to the starting position
+            Node start2 = new Node(4,7);
+            Node end2 = new Node(2,2);
+            ArrayList<Node> path2 = findPath(start2, end2, arrayOfArrays3);
+            for(Node n : path2){
+                System.out.println(n.xPos+" , "+n.yPos);
+            }
+            moveFromPath(path2);
+        }
+        //go through obstacle on the right
+        else if(colourGoal == "GREEN"){
+            //Path plan back from a new route back to the starting position
+            Node start2 = new Node(4,7);
+            Node end2 = new Node(2,2);
+            ArrayList<Node> path2 = findPath(start2, end2, arrayOfArrays4);
+            for(Node n : path2){
+                System.out.println(n.xPos+" , "+n.yPos);
+            }
+            moveFromPath(path2);
+        }
+    }
+    
+    public static void main(String[] args) {
+        //Initialize
+        init();
+        
+        //On button click - start
+        Button.waitForAnyPress();
+        int i = localise(lineValues,(float)0.95,(float)0.95);
+        moveToGrid(i);
+        Sound.beep();
+        Sound.setVolume(Sound.VOL_MAX);
         rotateLeft45();
+        
+        //task1ObstacleRight();
+        task1ObstacleLeft();
+        
+        
+        /*TO TEST*/
+        //task2();
+        
+        //On impact signal arrival
         while(readImpact(impactSamples) != 1) {
             moveForward(1.0);
         }
+        Sound.beep();
+        Sound.setVolume(Sound.VOL_MAX);
     }
 }
